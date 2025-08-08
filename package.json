@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "node-pg-migrate": "^8.0.3",
+    "pg-promise": "^11.15.0"
+  },
+  "scripts": {
+    "migrate": "node backend/migrate.js",
+    "create:migration": "node-pg-migrate --migrations-dir backend/migrations create"
+  }
+}
