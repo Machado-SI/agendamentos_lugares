@@ -12,7 +12,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(server.json());
 
-app.get('lugares', async (req, res) => {
+app.get('/lugares', async (req, res) => {
     try {
         const locais = await db.any('SELECT * FROM locais');
         res.status(200).json(locais);
@@ -25,7 +25,7 @@ app.get('lugares', async (req, res) => {
 app.get('/lugares/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        const local = await db.oneOrNone('SELECT * FROM locais WHERE id = $1', [id]);
+        const local = await db.oneOrNone('SELECT * FROM locais WHERE id_local = $1', [id]);
         if(local) {
             res.status(200).json(local);
         } else {
