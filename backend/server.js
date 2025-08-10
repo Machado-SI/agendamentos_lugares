@@ -1,8 +1,12 @@
-const server = require('express');
-const app = server();
-const cors = require('cors');
-const dotenv = require('dotenv').config();
-const db = require('./db');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import db from './db.js';
+
+// Configura dotenv
+dotenv.config();
+
+const app = express();
 
 const corsOptions = {
     origin: 'http://localhost:5173',
@@ -12,6 +16,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(server.json());
 
+
+// Rota para pegar todos os lugares
 app.get('/lugares', async (req, res) => {
     try {
         const locais = await db.any('SELECT * FROM locais');
@@ -22,6 +28,8 @@ app.get('/lugares', async (req, res) => {
     }
 })
 
+
+// Rota para pegar um lugar específico pelo ID
 app.get('/lugares/:id', async (req, res) => {
     try {
         const id = req.params.id;
