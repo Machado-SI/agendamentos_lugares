@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import db from './db.js';
+import { db } from './db.js';
 
 // Configura dotenv
 dotenv.config();
@@ -14,7 +14,7 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions));
-app.use(server.json());
+app.use(express.json());
 
 
 // Rota para pegar todos os lugares
