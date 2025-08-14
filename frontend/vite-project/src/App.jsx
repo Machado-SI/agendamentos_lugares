@@ -5,7 +5,14 @@ function App() {
   const [LocalSelecionado, setLocalSelecionado] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [dataHoraInicio, setDataHoraInicio] = useState('');
+  const [dataHoraFim, setDataHoraFim] = useState('');
   const API = import.meta.env.VITE_API || 'http://localhost:8888';
+
+  const handleAgendar = async (e) => {
+    e.preventDefault()
+    //Continuar a fazer a lógica de agendamento
+  }
 
   async function buscaLocais() {
     setLocaisList([])
@@ -31,21 +38,25 @@ function App() {
   }, [])
 
   return (  
+
     <div className='min-h-screen bg-gray-50'>
+      {/* Cabeçalho */}
       <header className='bg-blue-600 text-white shadow-md'>
         <div className='py-8 px-14'>
           <h1 className='font-bold text-2xl'>Sistema de Agendamentos de Locais</h1>
           <p className='mt-1'>Reserve salas e espaços facilmente</p>
         </div>
       </header>
-      <main className='mx-auto px-4 py-8'>
+
+      {/* Cards lugares */}
+      <main className='container mx-auto px-4 py-8'>
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
           <div className='lg:col-span-1'>
-            <div>
+            <div className='bg-white p-6 rounded-lg shadow-md'>
               <h2 className='font-semibold text-[1.5rem]'>Locais Disponíveis</h2>
-              <div className='space-y-4'>
+              <div className='space-y-4 mt-4'>
               {locais.map((local) => (
-               <div  key={local.id_local} className={`border-2 rounded-lg p-4 cursor-pointer ${LocalSelecionado === local.id_local ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`} onClick={() => setLocalSelecionado(local.id_local)}>
+               <div  key={local.id_local} className={`border-2 rounded-lg p-4 cursor-pointer ${LocalSelecionado?.id_local === local.id_local ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`} onClick={() => setLocalSelecionado(local)}>
                   <div className='flex justify-between'>
                     <h3 className='font-semibold text-lg'>{local.local}</h3>
                     <span className='bg-green-300 py-1 px-2 rounded-full'>Ativo</span>
@@ -60,6 +71,30 @@ function App() {
                </div> 
               ))}
               </div>
+            </div>
+          </div>
+
+          {/* Formulário de agendamento */}
+          <div className='lg:col-span-2 space-y-8'>
+            <div className='bg-white p-6 rounded-lg shadow-md'>
+              <h2 className='font-semibold text-[1.5rem] mb-2'>{LocalSelecionado ? `Agendar ${LocalSelecionado.local}` : 'Selecione um local para agendar'}</h2>
+
+              {LocalSelecionado ? (
+                <div className='space-y-4'>
+                  <div> 
+                    <label className='block text-sm font-medium'>Data e Hora de Início</label>
+                    <input type="datetime-local" value={dataHoraInicio} onChange={(e) => setDataHoraInicio(e.target.value)} className='border-2 border-gray-300 focus:outline-none transition ease-in-out duration-300 focus:border-blue-500 py-2 px-3 rounded-lg w-full mt-[2px]'/>
+                  </div>
+
+                  <div> 
+                    <label className='block text-sm font-medium'>Data e Hora de Término</label>
+                    <input type="datetime-local" value={dataHoraFim} onChange={(e) => setDataHoraFim(e.target.value)} className='border-2 border-gray-300 focus:outline-none transition ease-in-out duration-300 focus:border-blue-500 py-2 px-3 rounded-lg w-full mt-[2px]'/>
+                  </div>
+                  <button onClick={handleAgendar} className='w-full bg-blue-600 py-2 px-4 rounded-lg text-white'>Confirmar Agendamento</button>
+                </div>
+              ) : (
+                <div></div>
+              )}
             </div>
           </div>
         </div>
