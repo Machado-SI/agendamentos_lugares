@@ -15,15 +15,11 @@ export const up = (pgm) => {{
             primaryKey: true,
             notNull: true
         },
-        id_local: {
-            type: 'integer',
-            notNull: true,
-            references: 'locais(id_local)',
-            onDelete: 'cascade'
-        },
-        usuario: {
+        local: {
             type: 'varchar(100)',
-            notNull: true
+            notNull: true,
+            references: 'locais(local)',
+            onDelete: 'CASCADE'
         },
         data_inicio: {
             type: 'timestamp with time zone',

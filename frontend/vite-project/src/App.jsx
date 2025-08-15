@@ -1,35 +1,65 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react'
 
 function App() {
-  const [locais, setLocaisList] = useState([]);
-  const [LocalSelecionado, setLocalSelecionado] = useState(null);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [dataHoraInicio, setDataHoraInicio] = useState('');
-  const [dataHoraFim, setDataHoraFim] = useState('');
-  const API = import.meta.env.VITE_API || 'http://localhost:8888';
+  const [locais, setLocaisList] = useState([])
+  const [LocalSelecionado, setLocalSelecionado] = useState(null)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [mensagem, setMensagem] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [dataHoraInicio, setDataHoraInicio] = useState('')
+  const [dataHoraFim, setDataHoraFim] = useState('')
+  const [agendamentos, setAgendamentos] = useState([])
+  const API = import.meta.env.VITE_API || 'http://localhost:8888'
 
   const handleAgendar = async (e) => {
     e.preventDefault()
-    //Continuar a fazer a lógica de agendamento
+    setMensagem('')
+    setErrorMessage('')
+    try {
+      if (LocalSelecionado && dataHoraInicio && dataHoraFim) {
+      const novoAgendamento = {
+        local: LocalSelecionado.local,
+        dataHoraInicio,
+        dataHoraFim,
+      }
+
+      const response = await fetch(`${API}/agendar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(novoAgendamento),
+      })
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(`${errorData.error}`)
+      }
+      setMensagem('Agendamento realizado com sucesso!')
+    }
+    } catch (error) {
+      console.error('Erro ao agendar local:', error.message)
+      setErrorMessage(error.message)
+      setMensagem('')
+    }
   }
 
   async function buscaLocais() {
     setLocaisList([])
     setErrorMessage('')
-    setLoading(true);
+    setMensagem('')
+    setLoading(true)
     try {
       const response =  await fetch(`${API}/lugares`)
       if(!response.ok) {
         throw new Error(`Erro ao buscar locais: ${response.status}`)
       }
-      const data = await response.json();
-      setLocaisList(data);
+      const data = await response.json()
+      setLocaisList(data)
     } catch (error) {
-      console.error('Erro ao buscar locais:', error.message);
-      setErrorMessage('Erro ao buscar locais: ' + error.message);
+      console.error('Erro ao buscar locais:', error.message)
+      setErrorMessage('Erro ao buscar locais: ' + error.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -80,18 +110,26 @@ function App() {
               <h2 className='font-semibold text-[1.5rem] mb-2'>{LocalSelecionado ? `Agendar ${LocalSelecionado.local}` : 'Selecione um local para agendar'}</h2>
 
               {LocalSelecionado ? (
-                <div className='space-y-4'>
-                  <div> 
-                    <label className='block text-sm font-medium'>Data e Hora de Início</label>
-                    <input type="datetime-local" value={dataHoraInicio} onChange={(e) => setDataHoraInicio(e.target.value)} className='border-2 border-gray-300 focus:outline-none transition ease-in-out duration-300 focus:border-blue-500 py-2 px-3 rounded-lg w-full mt-[2px]'/>
-                  </div>
+                <form onSubmit={handleAgendar}>
+                  <div className='space-y-4'>
+                    <div> 
+                      <label className='block text-sm font-medium'>Data e Hora de Início</label>
+                      <input type="datetime-local" value={dataHoraInicio} onChange={(e) => setDataHoraInicio(e.target.value)} className='border-2 border-gray-300 focus:outline-none transition ease-in-out duration-300 focus:border-blue-500 py-2 px-3 rounded-lg w-full mt-[2px]' required/>
+                    </div>
 
-                  <div> 
-                    <label className='block text-sm font-medium'>Data e Hora de Término</label>
-                    <input type="datetime-local" value={dataHoraFim} onChange={(e) => setDataHoraFim(e.target.value)} className='border-2 border-gray-300 focus:outline-none transition ease-in-out duration-300 focus:border-blue-500 py-2 px-3 rounded-lg w-full mt-[2px]'/>
+                    <div> 
+                      <label className='block text-sm font-medium'>Data e Hora de Término</label>
+                      <input type="datetime-local" value={dataHoraFim} onChange={(e) => setDataHoraFim(e.target.value)} className='border-2 border-gray-300 focus:outline-none transition ease-in-out duration-300 focus:border-blue-500 py-2 px-3 rounded-lg w-full mt-[2px]' required/>
+                    </div>
+                    <button type='submit' className='w-full bg-blue-600 py-2 px-4 rounded-lg text-white hover:bg-blue-700 hover:cursor-pointer transition ease-in-out duration-300'>Confirmar Agendamento</button>
+                    {errorMessage && (
+                      <p className='font-semibold text-red-500 text-md text-center'>{errorMessage}</p>
+                    )}
+                    {mensagem && (
+                      <p className='font-semibold text-green-500 text-md text-center'>{mensagem}</p>
+                    )}
                   </div>
-                  <button onClick={handleAgendar} className='w-full bg-blue-600 py-2 px-4 rounded-lg text-white'>Confirmar Agendamento</button>
-                </div>
+                </form>
               ) : (
                 <div></div>
               )}
@@ -100,7 +138,7 @@ function App() {
         </div>
       </main>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

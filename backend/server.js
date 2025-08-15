@@ -28,20 +28,22 @@ app.get('/lugares', async (req, res) => {
     }
 })
 
-
-// Rota para pegar um lugar específico pelo ID
-app.get('/lugares/:id', async (req, res) => {
+//Rota para agendar um local
+app.post('/agendar', async (req, res) => {
     try {
-        const id = req.params.id;
-        const local = await db.oneOrNone('SELECT * FROM locais WHERE id_local = $1', [id]);
-        if(local) {
-            res.status(200).json(local);
-        } else {
-            res.status(404).json({ error: 'Local não encontrado' });
+        const {local, dataHoraInicio, dataHoraFim} = req.body;
+        if (!local || !dataHoraInicio || !dataHoraFim) {
+            return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
         }
+        const agendamento = await db.one(
+            'INSERT INTO agendamentos (local, data_inicio, data_termino) VALUES($1, $2, $3) RETURNING *',
+            [local, dataHoraInicio, dataHoraFim]
+        )
+        console.log('Agendamento criado:', agendamento);
+        res.status(201).json(agendamento);
     } catch (error) {
-        console.error('Erro ao buscar local:', error);
-        res.status(500).json({ error: error.message });
+        console.error('Erro ao agendar local:', error);
+        res.status(500).json({ error: 'Erro ao agendar local' });
     }
 })
 
