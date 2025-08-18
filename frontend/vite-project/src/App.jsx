@@ -28,7 +28,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(novoAgendamento),
+        body: JSON.stringify(novoAgendamento)
       })
       if (!response.ok) {
         const errorData = await response.json()
@@ -40,6 +40,21 @@ function App() {
       console.error('Erro ao agendar local:', error.message)
       setErrorMessage(error.message)
       setMensagem('')
+    }
+  }
+
+  async function buscaAgendamentos() {
+    setErrorMessage('')
+    try {
+      const response = await fetch(`${API}/agendamentos`)
+      if (!response.ok) {
+        const data = response.json()
+        throw new Error(`${data.error}`)
+      }
+      const data = await response.json()
+      setAgendamentos(data)
+    } catch (error) {
+      setErrorMessage('Erro ao buscar agendamentos: ' + error.message)
     }
   }
 
@@ -64,6 +79,7 @@ function App() {
   }
 
   useEffect(() => {
+    buscaAgendamentos()
     buscaLocais()
   }, [])
 
@@ -134,7 +150,27 @@ function App() {
                 <div></div>
               )}
             </div>
+
+            {/* Lista de agendamentos */}
+            <div className='rounded-lg bg-white p-6 shadow-md'>
+              <h2 className='text-[1.5rem] font-semibold mb-4'>Meus Agendamentos</h2>
+
+              {agendamentos.length > 0 ? (
+                <div className='space-y-6'>
+                  {agendamentos.map((agendamento, index) => (
+                    <div key={index} className='border-2 border-gray-200 rounded-lg p-4'>
+                      <h3 className='font-semibold text-lg'>{agendamento.local}</h3>
+                      <p className='text-sm text-gray-600'>Início: {new Date(agendamento.data_inicio).toLocaleString()}</p>
+                      <p className='text-sm text-gray-600'>Término: {new Date(agendamento.data_termino).toLocaleString()}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className='mt-4 font-semibold'>Nenhum agendamento realizado.</p>
+              )}
+            </div>
           </div>
+
         </div>
       </main>
     </div>
