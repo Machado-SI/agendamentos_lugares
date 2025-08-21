@@ -63,7 +63,7 @@ app.get('/agendamentos', async (req, res) => {
 app.delete('/agendamentos/:id', async (req, res) => {
     try {
         const {id} = req.params;
-        const result = await db.none('DELETE FROM agendamentos WHERE id = $1', [id]);
+        const result = await db.result('DELETE FROM agendamentos WHERE id = $1', [id]);
         if(result.rowCount === 0) {
             return res.status(404).json({ error: 'Agendamento não encontrado' });
         }

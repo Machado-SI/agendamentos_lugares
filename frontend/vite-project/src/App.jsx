@@ -35,6 +35,10 @@ function App() {
         throw new Error(`${errorData.error}`)
       }
       setMensagem('Agendamento realizado com sucesso!')
+      buscaAgendamentos()
+
+      setDataHoraInicio('')
+      setDataHoraFim('')
     }
     } catch (error) {
       console.error('Erro ao agendar local:', error.message)
@@ -43,12 +47,36 @@ function App() {
     }
   }
 
+  async function deletar(id) {
+    setErrorMessage('')
+    setMensagem('')
+    try {
+      const response = await fetch(`${API}/agendamentos/${id}`, {
+        method: 'DELETE',
+      })
+      if (!response.ok) {
+        const data = await response.json()
+        if (data && data.error) {
+          throw new Error(data.error)
+        } else {
+          throw new Error(`HTTP ${response.status} - ${response.statusText}`)
+        }
+      }
+      setAgendamentos(prevAgendamentos => 
+      prevAgendamentos.filter(agendamento => agendamento.id !== id)
+    )
+      setMensagem('Agendamento deletado com sucesso!')
+    } catch (error) {
+      setErrorMessage('Erro ao deletar agendamento: ' + error.message)
+    }
+  }
+
   async function buscaAgendamentos() {
     setErrorMessage('')
     try {
       const response = await fetch(`${API}/agendamentos`)
       if (!response.ok) {
-        const data = response.json()
+        const data = await response.json()
         throw new Error(`${data.error}`)
       }
       const data = await response.json()
@@ -158,10 +186,11 @@ function App() {
               {agendamentos.length > 0 ? (
                 <div className='space-y-6'>
                   {agendamentos.map((agendamento, index) => (
-                    <div key={index} className='border-2 border-gray-200 rounded-lg p-4'>
+                    <div key={agendamento.id} className='border-2 border-gray-200 rounded-lg p-4'>
                       <h3 className='font-semibold text-lg'>{agendamento.local}</h3>
                       <p className='text-sm text-gray-600'>Início: {new Date(agendamento.data_inicio).toLocaleString()}</p>
                       <p className='text-sm text-gray-600'>Término: {new Date(agendamento.data_termino).toLocaleString()}</p>
+                      <button className='cursor-pointer px-2 py-1 rounded-lg bg-red-600 text-white mt-2' onClick={() => deletar(agendamento.id)}>Excluir</button>
                     </div>
                   ))}
                 </div>
