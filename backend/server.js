@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import yup from 'yup';
 
-// 
+// Esquema de validação para registro de usuário
 const registerValidate = yup.object().shape({
     nome: yup.string().required().min(5),
     email: yup.string().email().required(),
@@ -15,6 +15,9 @@ const registerValidate = yup.object().shape({
 
 // Configura dotenv
 dotenv.config();
+
+// JWT Secret
+const JWT_SECRET = process.env.JWT_SECRET
 
 const app = express();
 
@@ -88,7 +91,7 @@ app.post('/register', async (req, res) => {
         // Hash da senha e inserção do novo usuário no banco de dados
         const hashedPassword = await bcrypt.hash(senha, 10);
         const newUser = await db.one(
-            'INSERT INTO usuarios (nome, email ,senha) VALUES ($1, $2, $3) RETURNING id, nome',
+            'INSERT INTO users (nome, email ,senha) VALUES ($1, $2, $3) RETURNING id, nome',
             [nome, email, hashedPassword]
         );
         res.status(201).json(newUser);
@@ -104,6 +107,36 @@ app.post('/register', async (req, res) => {
         }
         console.error('Erro ao registrar usuário:', error);
         res.status(500).json({ error: 'Erro ao registrar usuário' });
+    }
+})
+
+// Rota para login de usuário
+app.post('/login', async (req, res) => {
+    try {
+        const {nome, senha} = req.body;
+        
+        // Verifica se o usuário existe
+        const user = await db.oneOrNone('SELECT * FROM users WHERE nome = $1', [nome]);
+        if (!user) {
+            return res.status(400).json({ error: 'Usuário não cadastrado, Faça um cadastro para continuar' });
+        }
+
+        // Verifica se a senha está correta
+        const isPasswordValid = await bcrypt.compare(senha, user.senha);
+        if (!isPasswordValid) {
+            return res.status(400).json({ error: 'Senha inválida' });
+        }
+
+        // Gera o token JWT e verefica o ambiente para definir o tempo de expiração
+        const options = { expiresIn: process.env.NODE_ENV === 'test' ? '15m' : '30d' };
+        const token = jwt.sign({ id: user.id, nome: user.nome}, JWT_SECRET, options);
+        res.status(200).json({ token });
+    } catch (err) {
+        console.log('Erro ao fazer login:', err);
+        res.status(500).json({
+            error: 'Erro ao fazer login',
+            message: err.message
+        });
     }
 })
 
