@@ -9,7 +9,8 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "node-pg-migrate": "^8.0.3",
-    "pg-promise": "^11.15.0"
+    "pg-promise": "^11.15.0",
+    "yup": "^1.7.0"
   },
   "scripts": {
     "migrate": "node backend/migrate.js",
