@@ -8,9 +8,9 @@ import yup from 'yup';
 
 // Esquema de validação para registro de usuário
 const registerValidate = yup.object().shape({
-    nome: yup.string().required().min(5),
+    nome: yup.string().required().min(5, 'O nome deve ter ao menos 5 caracteres'),
     email: yup.string().email().required(),
-    senha: yup.string().required().min(7).max(32).matches(/[a-z]/).matches(/[A-Z]/).matches(/[0-9]/).matches(/[^a-zA-Z0-9]/)
+    senha: yup.string().required().min(7).max(32).matches(/[a-z]/, 'A senha deve conter ao menor uma leta minúscula').matches(/[A-Z]/, 'A senha deve ao menos conter uma letra maiúscula').matches(/[0-9]/, 'A senha deve conter ao menos um número').matches(/[^a-zA-Z0-9]/, 'A senha deve conter ao menos um caractere especial')
 })
 
 // Configura dotenv

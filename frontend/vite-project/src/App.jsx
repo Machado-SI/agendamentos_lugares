@@ -90,7 +90,6 @@ function App() {
     setLocaisList([])
     setErrorMessage('')
     setMensagem('')
-    setLoading(true)
     try {
       const response =  await fetch(`${API}/lugares`)
       if(!response.ok) {
@@ -101,8 +100,6 @@ function App() {
     } catch (error) {
       console.error('Erro ao buscar locais:', error.message)
       setErrorMessage('Erro ao buscar locais: ' + error.message)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -185,7 +182,7 @@ function App() {
 
               {agendamentos.length > 0 ? (
                 <div className='space-y-6'>
-                  {agendamentos.map((agendamento, index) => (
+                  {agendamentos.map((agendamento) => (
                     <div key={agendamento.id} className='border-2 border-gray-200 rounded-lg p-4'>
                       <h3 className='font-semibold text-lg'>{agendamento.local}</h3>
                       <p className='text-sm text-gray-600'>Início: {new Date(agendamento.data_inicio).toLocaleString()}</p>
