@@ -107,7 +107,7 @@ function Register() {
       </div>
     ) : (
       // Formulário de registro
-      <div className="min-h-screen flex items-center justify-center bg-blue-700 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-blue-600 p-4">
         <form onSubmit={handleSubmit} className="max-w-sm w-full bg-white p-6 rounded-lg shadow-lg flex flex-col">
           <span className="text-center text-2xl font-bold mb-6 text-gray-800">Register</span>
 
