@@ -5,6 +5,7 @@ import { db } from './db.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import yup from 'yup';
+import Protect from './AuthMiddleware.js';
 
 // Esquema de validação para registro de usuário
 const registerValidate = yup.object().shape({
@@ -42,15 +43,18 @@ app.get('/lugares', async (req, res) => {
 })
 
 //Rota para agendar um local
-app.post('/agendar', async (req, res) => {
+app.post('/agendar', Protect, async (req, res) => {
     try {
         const {local, dataHoraInicio, dataHoraFim} = req.body;
+
+        const userId = req.user.id;
+        // Validação simples dos dados
         if (!local || !dataHoraInicio || !dataHoraFim) {
             return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
         }
         const agendamento = await db.one(
-            'INSERT INTO agendamentos (local, data_inicio, data_termino) VALUES($1, $2, $3) RETURNING *',
-            [local, dataHoraInicio, dataHoraFim]
+            'INSERT INTO agendamentos (local, data_inicio, data_termino, usuario_id) VALUES($1, $2, $3, $4) RETURNING *',
+            [local, dataHoraInicio, dataHoraFim, userId]
         )
         console.log('Agendamento criado:', agendamento);
         res.status(201).json(agendamento);
