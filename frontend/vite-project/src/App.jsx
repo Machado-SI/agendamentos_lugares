@@ -121,14 +121,7 @@ function App() {
   return (
 
     <div className='min-h-screen bg-gray-50'>
-      {/* Cabeçalho */}
-      <header className='bg-blue-600 text-white shadow-md'>
-        <div className='py-8 px-14'>
-          <h1 className='font-bold text-2xl'>Sistema de Agendamentos de Locais</h1>
-          <p className='mt-1'>Reserve salas e espaços facilmente</p>
-        </div>
-      </header>
-
+    
       {/* Cards lugares */}
       <main className='container mx-auto px-4 py-8'>
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
